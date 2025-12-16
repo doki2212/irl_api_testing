@@ -1,0 +1,683 @@
+{
+	"info": {
+		"_postman_id": "aebc0455-d33d-46d8-a9e3-287ca4b1a36c",
+		"name": "Real World APIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46907681",
+		"_collection_link": "https://chrisochristudhas.postman.co/workspace/Testing~bf93fcfc-dd0c-48d0-89e2-692337141276/collection/46907681-aebc0455-d33d-46d8-a9e3-287ca4b1a36c?action=share&source=collection_link&creator=46907681"
+	},
+	"item": [
+		{
+			"name": "OW1 - API key verification",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let owKeyCheck = pm.response.json();\r",
+							"\r",
+							"pm.test(\"API key is valid and active\" , () => {\r",
+							"    pm.expect(pm.response.code).to.eql(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response Contains City Name\", () => {\r",
+							"    pm.expect(owKeyCheck).to.have.property(\"name\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{openweather_base_url}}/data/2.5/weather?q={{city}}&appid={{openweather_api_key}}",
+					"host": [
+						"{{openweather_base_url}}"
+					],
+					"path": [
+						"data",
+						"2.5",
+						"weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "{{city}}"
+						},
+						{
+							"key": "appid",
+							"value": "{{openweather_api_key}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "OW2 - Missing API key (401)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let owMissingKey = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Status is 401 (missing API key)\", () => {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error message exists\", () => {\r",
+							"    pm.expect(owMissingKey).to.have.property(\"message\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{openweather_base_url}}/data/2.5/weather?q={{city}}",
+					"host": [
+						"{{openweather_base_url}}"
+					],
+					"path": [
+						"data",
+						"2.5",
+						"weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "{{city}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "OW3 - Invalid API key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let owInvalidKey = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Status is 401 (invalid API key)\", () => {\r",
+							"  pm.response.to.have.status(401);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error message exists\", () => {\r",
+							"  pm.expect(owInvalidKey).to.have.property(\"message\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{openweather_base_url}}/data/2.5/weather?q={{city}}&appid=FAKE_KEY_123\n",
+					"host": [
+						"{{openweather_base_url}}"
+					],
+					"path": [
+						"data",
+						"2.5",
+						"weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "{{city}}"
+						},
+						{
+							"key": "appid",
+							"value": "FAKE_KEY_123\n"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "OW4 - Invalid city",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let owInvalidCity = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Status is 404, 401 or 400 for invalid city\", () => {\r",
+							"  pm.expect([400, 404, 401]).to.include(pm.response.code);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error message exists\", () => {\r",
+							"  pm.expect(owInvalidCity).to.have.property(\"message\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{openweather_base_url}}/data/2.5/weather?q=ThisCityDoesNotExist123&appid={{openweather_api_key}}\n",
+					"host": [
+						"{{openweather_base_url}}"
+					],
+					"path": [
+						"data",
+						"2.5",
+						"weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "ThisCityDoesNotExist123"
+						},
+						{
+							"key": "appid",
+							"value": "{{openweather_api_key}}\n"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "OW5 - Valid city (200)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let owValid = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Status is 200\", () => {\r",
+							"  pm.expect(pm.response.code).to.eql(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"City name matches environment variable\", () => {\r",
+							"  pm.expect(owValid.name.toLowerCase())\r",
+							"    .to.eql(pm.environment.get(\"city\").toLowerCase());\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Temperature is numeric\", () => {\r",
+							"  pm.expect(owValid.main.temp).to.be.a(\"number\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Humidity is between 0 and 100\", () => {\r",
+							"  pm.expect(owValid.main.humidity).to.be.within(0, 100);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Weather description exists\", () => {\r",
+							"  pm.expect(owValid.weather[0].description).to.be.a(\"string\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time < 1500ms\", () => {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(1500);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{openweather_base_url}}/data/2.5/weather?q={{city}}&appid={{openweather_api_key}}&units=metric\n",
+					"host": [
+						"{{openweather_base_url}}"
+					],
+					"path": [
+						"data",
+						"2.5",
+						"weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "{{city}}"
+						},
+						{
+							"key": "appid",
+							"value": "{{openweather_api_key}}"
+						},
+						{
+							"key": "units",
+							"value": "metric\n"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CG1 - BTC & ETH price (USD)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let cgUsd = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Status is 200\", () => {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"BTC price exists and > 0\", () => {\r",
+							"  pm.expect(cgUsd).to.have.property(\"bitcoin\");\r",
+							"  pm.expect(cgUsd.bitcoin).to.have.property(\"usd\");\r",
+							"  pm.expect(cgUsd.bitcoin.usd).to.be.a(\"number\");\r",
+							"  pm.expect(cgUsd.bitcoin.usd).to.be.above(0);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"ETH price exists and > 0\", () => {\r",
+							"  pm.expect(cgUsd).to.have.property(\"ethereum\");\r",
+							"  pm.expect(cgUsd.ethereum).to.have.property(\"usd\");\r",
+							"  pm.expect(cgUsd.ethereum.usd).to.be.a(\"number\");\r",
+							"  pm.expect(cgUsd.ethereum.usd).to.be.above(0);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time < 1500ms\", () => {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(1500);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{coingecko_base_url}}/simple/price?ids={{coin_ids}}&vs_currencies={{vs_currencies}}",
+					"host": [
+						"{{coingecko_base_url}}"
+					],
+					"path": [
+						"simple",
+						"price"
+					],
+					"query": [
+						{
+							"key": "ids",
+							"value": "{{coin_ids}}"
+						},
+						{
+							"key": "vs_currencies",
+							"value": "{{vs_currencies}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CG2 - BTC price (USD, INR, EUR)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let cgMulti = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Status is 200\", () => {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"BTC has usd, inr, eur and all > 0\", () => {\r",
+							"  pm.expect(cgMulti).to.have.property(\"bitcoin\");\r",
+							"\r",
+							"  pm.expect(cgMulti.bitcoin).to.have.property(\"usd\");\r",
+							"  pm.expect(cgMulti.bitcoin).to.have.property(\"inr\");\r",
+							"  pm.expect(cgMulti.bitcoin).to.have.property(\"eur\");\r",
+							"\r",
+							"  pm.expect(cgMulti.bitcoin.usd).to.be.a(\"number\").above(0);\r",
+							"  pm.expect(cgMulti.bitcoin.inr).to.be.a(\"number\").above(0);\r",
+							"  pm.expect(cgMulti.bitcoin.eur).to.be.a(\"number\").above(0);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time < 1500ms\", () => {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(1500);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{coingecko_base_url}}/simple/price?ids=bitcoin&vs_currencies=usd,inr,eur",
+					"host": [
+						"{{coingecko_base_url}}"
+					],
+					"path": [
+						"simple",
+						"price"
+					],
+					"query": [
+						{
+							"key": "ids",
+							"value": "bitcoin"
+						},
+						{
+							"key": "vs_currencies",
+							"value": "usd,inr,eur"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CG3 - Invalid coin id (empty object)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let cgInvalid = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Status is 200\", () => {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is empty object for unknown ids\", () => {\r",
+							"  pm.expect(Object.keys(cgInvalid).length).to.eql(0);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{coingecko_base_url}}/simple/price?ids=unknowncoin123&vs_currencies=usd",
+					"host": [
+						"{{coingecko_base_url}}"
+					],
+					"path": [
+						"simple",
+						"price"
+					],
+					"query": [
+						{
+							"key": "ids",
+							"value": "unknowncoin123"
+						},
+						{
+							"key": "vs_currencies",
+							"value": "usd"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "N1 - NASA Search (missing q) - NEGATIVE",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status is 400/4xx for missing query\", () => {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([400, 404]);\r",
+							"});\r",
+							"\r",
+							"// Avoid pm.response.json() unless it's JSON\r",
+							"pm.test(\"Response is JSON\", () => {\r",
+							"  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{nasa_images_base_url}}/search",
+					"host": [
+						"{{nasa_images_base_url}}"
+					],
+					"path": [
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "N2 - NASA Search (page 1)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status is 200\", () => pm.response.to.have.status(200));\r",
+							"\r",
+							"pm.test(\"Response is JSON\", () => {\r",
+							"  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");\r",
+							"});\r",
+							"\r",
+							"const json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"collection.items is an array and not empty\", () => {\r",
+							"  pm.expect(json).to.have.property(\"collection\");\r",
+							"  pm.expect(json.collection).to.have.property(\"items\");\r",
+							"  pm.expect(json.collection.items).to.be.an(\"array\");\r",
+							"  pm.expect(json.collection.items.length).to.be.greaterThan(0);\r",
+							"});\r",
+							"\r",
+							"// Basic schema-ish checks on first item\r",
+							"pm.test(\"First item has data[0] and links[0]\", () => {\r",
+							"  const first = json.collection.items[0];\r",
+							"  pm.expect(first).to.have.property(\"data\");\r",
+							"  pm.expect(first.data).to.be.an(\"array\");\r",
+							"  pm.expect(first.data[0]).to.have.property(\"nasa_id\");\r",
+							"  pm.expect(first.data[0]).to.have.property(\"title\");\r",
+							"});\r",
+							"\r",
+							"const firstId = json.collection.items[0].data[0].nasa_id;\r",
+							"pm.environment.set(\"nasa_page1_first_id\", firstId);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{nasa_images_base_url}}/search?q={{nasa_query}}&page=1",
+					"host": [
+						"{{nasa_images_base_url}}"
+					],
+					"path": [
+						"search"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "{{nasa_query}}"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "N3 - NASA Search (page 2)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status is 200\", () => {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is JSON\", () => {\r",
+							"  pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");\r",
+							"});\r",
+							"\r",
+							"const json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"collection.items exists and is an array\", () => {\r",
+							"  pm.expect(json).to.have.property(\"collection\");\r",
+							"  pm.expect(json.collection).to.have.property(\"items\");\r",
+							"  pm.expect(json.collection.items).to.be.an(\"array\");\r",
+							"  pm.expect(json.collection.items.length).to.be.greaterThan(0);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Page 2 first nasa_id differs from Page 1 first nasa_id\", () => {\r",
+							"  const page1Id = pm.environment.get(\"nasa_page1_first_id\");\r",
+							"  const page2Id = json.collection.items[0].data[0].nasa_id;\r",
+							"  pm.expect(page2Id).to.not.eql(page1Id);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{nasa_images_base_url}}/search?q={{nasa_query}}&page=2",
+					"host": [
+						"{{nasa_images_base_url}}"
+					],
+					"path": [
+						"search"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "{{nasa_query}}"
+						},
+						{
+							"key": "page",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "N4 - NASA Search (no results)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status is 200\", () => {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"items array exists (may be empty)\", () => {\r",
+							"  const items = (json.collection && json.collection.items) ? json.collection.items : [];\r",
+							"  pm.expect(items).to.be.an(\"array\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"No results returns empty items array\", () => {\r",
+							"  const items = json.collection.items || [];\r",
+							"  pm.expect(items.length).to.eql(0);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{nasa_images_base_url}}/search?q=ThisQueryShouldNotExist_12345&page=1",
+					"host": [
+						"{{nasa_images_base_url}}"
+					],
+					"path": [
+						"search"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "ThisQueryShouldNotExist_12345"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
